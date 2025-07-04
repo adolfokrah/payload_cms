@@ -1,4 +1,5 @@
 import { APIError, type CollectionConfig } from 'payload'
+import type { ProductVariation } from '@/lib/types';
 
 export const Products: CollectionConfig = {
   slug: 'products',
@@ -39,13 +40,11 @@ export const Products: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ data }) => {
-        const variations = data.variations || [];
-
-       
+        const variations: ProductVariation[] = data.variations || [];
 
         if (Array.isArray(variations)) {
           // Get attribute keys (exclude metaData)
-          const getAttrKeys = (v: any) => Object.keys(v).filter(k => k !== 'metaData');
+          const getAttrKeys = (v: ProductVariation) => Object.keys(v).filter(k => k !== 'metaData' && k !== 'isComplete');
           for (let i = 0; i < variations.length; i++) {
             const keys = getAttrKeys(variations[i]);
             // Check for empty variation

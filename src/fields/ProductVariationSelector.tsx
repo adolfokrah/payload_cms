@@ -3,6 +3,7 @@ import * as React from 'react';
 import { useField, useFormFields, SelectInput, Button, TextInput, UploadInput } from '@payloadcms/ui';
 import useSWR from 'swr';
 import { fetchVariationAttributes } from '@/lib/api';
+import type { ProductVariation, ProductVariationMetaData, ProductVariationSelectorProps } from '@/lib/types';
 
 // Helper to fetch variation attributes for a category
 
@@ -48,11 +49,11 @@ function isVariationComplete(
   return true;
 }
 
-const ProductVariationSelector: React.FC<{ path: string }> = ({ path }) => {
-  const { value, setValue, initialValue } = useField<any[]>({ path });
+const ProductVariationSelector: React.FC<ProductVariationSelectorProps> = ({ path }) => {
+  const { value, setValue, initialValue } = useField<ProductVariation[]>({ path });
   const formFields = useFormFields(([fields]) => fields);
   const categoryId = getCategoryId(formFields?.category?.value);
-  const variations = Array.isArray(value || initialValue) ? value || initialValue : [];
+  const variations: ProductVariation[] = Array.isArray(value || initialValue) ? value || initialValue : [];
 
 
   // Fetch variation attributes for the selected category
@@ -69,7 +70,7 @@ const ProductVariationSelector: React.FC<{ path: string }> = ({ path }) => {
 
   React.useEffect(() => {
     if (!Array.isArray(value)) return;
-    const updated = value.map((variation: any) => {
+    const updated = value.map((variation: ProductVariation) => {
       const complete = isVariationComplete(variation, attributeNames, requiredMetaFields);
       if (variation.isComplete !== complete) {
         return { ...variation, isComplete: complete };
@@ -114,12 +115,12 @@ const ProductVariationSelector: React.FC<{ path: string }> = ({ path }) => {
   };
 
   const handleMetaData = (variationIdx: number, field: string, value: string | boolean) => {
-    const newVariations = [...variations];
+    const newVariations: ProductVariation[] = [...variations];
     if (typeof newVariations[variationIdx] !== 'object' || Array.isArray(newVariations[variationIdx])) {
-      newVariations[variationIdx] = { metaData: {} };
+      newVariations[variationIdx] = { metaData: {} as ProductVariationMetaData };
     }
     if (!newVariations[variationIdx].metaData) {
-      newVariations[variationIdx].metaData = {};
+      newVariations[variationIdx].metaData = {} as ProductVariationMetaData;
     }
     newVariations[variationIdx].metaData[field] = value;
     setValue(newVariations);
@@ -130,10 +131,10 @@ const ProductVariationSelector: React.FC<{ path: string }> = ({ path }) => {
     attribute: any,
     selectedOption: any
   ) => {
-    const newVariations = [...variations];
+    const newVariations: ProductVariation[] = [...variations];
     // Always ensure the variation is an object with a variation property
     if (typeof newVariations[variationIdx] !== 'object' || Array.isArray(newVariations[variationIdx])) {
-      newVariations[variationIdx] = { metaData: {} };
+      newVariations[variationIdx] = { metaData: {} as ProductVariationMetaData };
     }
     newVariations[variationIdx][attribute.name] = selectedOption?.label || '';
     // Update isComplete
@@ -184,7 +185,7 @@ const ProductVariationSelector: React.FC<{ path: string }> = ({ path }) => {
                         id: opt.id || opt.value || opt.label,
                       }))
                     }
-                    value={variation?.[attr.name] || ''}
+                    value={typeof variation?.[attr.name] === 'string' ? variation[attr.name] as string : ''}
                     onChange={(selectedOption: any) => {
                       handleChange(idx, attr, selectedOption);
                     }}
@@ -200,7 +201,7 @@ const ProductVariationSelector: React.FC<{ path: string }> = ({ path }) => {
                   <TextInput
                     path={`${path}.${idx}.metaData.purchasePrice`}
                     required
-                    value={variation?.metaData?.purchasePrice || ''}
+                    value={variation?.metaData?.purchasePrice !== undefined && variation?.metaData?.purchasePrice !== null ? String(variation.metaData.purchasePrice) : ''}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleMetaData(idx, 'purchasePrice', e.target.value)}
                     placeholder="Enter purchase price"
                     label={"Purchased Price"}
@@ -208,14 +209,14 @@ const ProductVariationSelector: React.FC<{ path: string }> = ({ path }) => {
                   <TextInput
                     path={`${path}.${idx}.metaData.sellingPrice`}
                     required
-                    value={variation?.metaData?.sellingPrice || ''}
+                    value={variation?.metaData?.sellingPrice !== undefined && variation?.metaData?.sellingPrice !== null ? String(variation.metaData.sellingPrice) : ''}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleMetaData(idx, 'sellingPrice', e.target.value)}
                     placeholder="Enter selling price"
                     label={"Selling Price"}
                   />
                   <TextInput
                     path={`${path}.${idx}.metaData.discountedPrice`}
-                    value={variation?.metaData?.discountedPrice || ''}
+                    value={variation?.metaData?.discountedPrice !== undefined && variation?.metaData?.discountedPrice !== null ? String(variation.metaData.discountedPrice) : ''}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleMetaData(idx, 'discountedPrice', e.target.value)}
                     placeholder="Enter discounted price"
                     label={"Dicounted Price"}
@@ -234,7 +235,7 @@ const ProductVariationSelector: React.FC<{ path: string }> = ({ path }) => {
               {variation?.metaData?.trackStock && (
                   <TextInput
                     path={`${path}.${idx}.metaData.stock`}
-                    value={variation?.metaData?.stock || ''}
+                    value={variation?.metaData?.stock !== undefined && variation?.metaData?.stock !== null ? String(variation.metaData.stock) : ''}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleMetaData(idx, 'stock', e.target.value)}
                     placeholder="Enter stock quantity"
                     label={"Stock"}
