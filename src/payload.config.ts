@@ -26,15 +26,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [
-    Users,
-    Media,
-    Vendors,
-    Categories,
-    Brands,
-    Products,
-    VariationAttributes,
-  ],
+  collections: [Users, Media, Vendors, Categories, Brands, Products, VariationAttributes],
   editor: lexicalEditor({}),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

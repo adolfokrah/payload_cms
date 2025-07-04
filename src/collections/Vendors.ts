@@ -1,27 +1,84 @@
+import {
+  PAYMENT_METHOD_MOBILE_MONEY_OPTIONS,
+  PAYMENT_METHODS,
+  PAYMENT_METHOD_OPTIONS,
+} from '@/common/constants/payments'
 import type { CollectionConfig } from 'payload'
 
 export const Vendors: CollectionConfig = {
   slug: 'vendors',
-  admin: { useAsTitle: 'shop_name' },
+  admin: { useAsTitle: 'shop name' },
   fields: [
-    { name: 'shop_name', type: 'text', required: true },
+    { name: 'shop name', type: 'text', required: true },
     { name: 'description', type: 'textarea' },
     { name: 'logo', type: 'upload', relationTo: 'media' },
-    { name: 'website', type: 'text', required: true },
+    { name: 'website', type: 'text', required: false },
     { name: 'email', type: 'email', required: true, unique: true },
     { name: 'phone', type: 'text' },
     { name: 'address', type: 'text' },
     { name: 'city', type: 'text' },
-    { name: 'gps_code', type: 'text' },
-    { name: 'zip_code', type: 'text' },
+    { name: 'gps code', type: 'text' },
+    { name: 'zip code', type: 'text' },
     { name: 'country', type: 'text' },
-    { name: 'user', type: 'relationship', relationTo: 'users', required: true, unique: true,  filterOptions: () => {
-      return {
-        role: {
-          not_equals:  'vendor', // Ensure the user is not already a vendor
+    {
+      name: 'social media pages',
+      type: 'array',
+      fields: [
+        {
+          name: 'social media',
+          type: 'select',
+          options: ['Facebook', 'Tiktok', 'Instagram', 'Snapchat'],
         },
-      }
-    }},
+        {
+          name: 'page link',
+          type: 'text',
+        },
+      ],
+    },
+    {
+      name: 'payment Method',
+      type: 'select',
+      required: true,
+      options: PAYMENT_METHOD_OPTIONS,
+    },
+    {
+      name: 'Mobile Money',
+      type: 'group',
+      fields: [
+        {
+          name: 'Provider',
+          type: 'select',
+          options: PAYMENT_METHOD_MOBILE_MONEY_OPTIONS,
+        },
+        {
+          name: 'Account holder name',
+          type: 'text',
+        },
+        {
+          name: 'Phone Number',
+          type: 'text',
+        },
+      ],
+      admin: {
+        condition: (data) => data?.['payment Method'] == PAYMENT_METHODS.mobileMoney,
+      },
+    },
+    {
+      name: 'user',
+      type: 'relationship',
+      relationTo: 'users',
+      required: true,
+      unique: true,
+      filterOptions: ({ data }) => {
+        const filters: any[] = [];
+        filters.push({ role: { not_equals: 'vendor' } });
+        const currentUser = data?.user;
+        if (currentUser) {
+          filters.push({ id: { equals: typeof currentUser === 'object' && currentUser !== null ? currentUser.id : currentUser } });
+        }
+        return { or: filters };
+      },
+    },
   ],
   hooks: {
     afterChange: [
@@ -39,7 +96,7 @@ export const Vendors: CollectionConfig = {
                 vendor_profile: doc.id,
                 role: 'vendor', // Ensure the user role is vendor
               },
-              req
+              req,
             })
           } catch (error) {
             console.error('Error updating user vendor_profile:', error)
@@ -62,7 +119,7 @@ export const Vendors: CollectionConfig = {
                 vendor_profile: null,
                 role: 'buyer', // Reset the user role to user
               },
-              req
+              req,
             })
           } catch (error) {
             console.error('Error clearing user vendor_profile:', error)

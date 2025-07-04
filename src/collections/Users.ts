@@ -39,13 +39,15 @@ export const Users: CollectionConfig = {
       label: 'Role',
       filterOptions: ({ data, options }) => {
         if (data?.role == 'vendor') {
-          const opt = options.filter(option => (typeof option === 'object' ? option.value : option) == 'vendor')
+          const opt = options.filter(
+            (option) => (typeof option === 'object' ? option.value : option) == 'vendor',
+          )
           return opt
         }
-        return options.filter(option => {
+        return options.filter((option) => {
           return (typeof option === 'object' ? option.value : option) !== 'vendor'
         })
-      }
+      },
     },
     {
       name: 'profilePicture',

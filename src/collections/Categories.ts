@@ -21,11 +21,12 @@ export const Categories: CollectionConfig = {
       relationTo: 'categories',
       required: false,
       filterOptions: ({ id }) => ({
-        id: { not_equals: id }
+        id: { not_equals: id },
       }),
       admin: {
         condition: (_, { id }) => Boolean(id),
-        description: 'Select parent category (only after save). Leave empty for main category. eg. Women, Men, Kids',
+        description:
+          'Select parent category (only after save). Leave empty for main category. eg. Women, Men, Kids',
       },
     },
     {
@@ -50,7 +51,7 @@ export const Categories: CollectionConfig = {
         description: 'Select all option types relevant for this category.',
         condition: (data) => {
           return data?.children?.length < 1
-        }
+        },
       },
     },
   ],
@@ -58,13 +59,12 @@ export const Categories: CollectionConfig = {
     afterChange: [
       async ({ doc, req, operation, context, previousDoc }) => {
         try {
-         if(operation == "create" || operation == "update"){
+          if (operation == 'create' || operation == 'update') {
+            if (context.skipHooks === true) {
+              return
+            }
 
-          if (context.skipHooks === true) {
-            return
-          }
-
-            if(previousDoc?.parent && previousDoc?.parent !== doc?.parent){
+            if (previousDoc?.parent && previousDoc?.parent !== doc?.parent) {
               // If parent has changed, remove this category from the old parent's children
               const oldParent = await req.payload.findByID({
                 collection: 'categories',
@@ -72,13 +72,10 @@ export const Categories: CollectionConfig = {
               })
 
               if (oldParent) {
-                const updatedChildren = oldParent.children?.filter(
-                  (child) =>
-                    typeof child === 'object'
-                      ? child.id !== doc.id
-                      : child !== doc.id
-                ) || undefined
-
+                const updatedChildren =
+                  oldParent.children?.filter((child) =>
+                    typeof child === 'object' ? child.id !== doc.id : child !== doc.id,
+                  ) || undefined
 
                 await req.payload.update({
                   collection: 'categories',
@@ -93,16 +90,16 @@ export const Categories: CollectionConfig = {
                 })
               }
             }
-           
-            if(doc?.parent){
-               const foundParent = await req.payload.findByID({
+
+            if (doc?.parent) {
+              const foundParent = await req.payload.findByID({
                 collection: 'categories',
-                 id: doc?.parent
-               })
-               
-               if(foundParent){
+                id: doc?.parent,
+              })
+
+              if (foundParent) {
                 const children = foundParent?.children
-                
+
                 await req.payload.update({
                   collection: 'categories',
                   id: doc?.parent,
@@ -112,28 +109,26 @@ export const Categories: CollectionConfig = {
                   context: {
                     skipHooks: true, // Skip hooks to avoid infinite loop
                   },
-                  req
+                  req,
                 })
-
-               }
-            }else{
+              }
+            } else {
               console.log('not fond parent')
             }
-         }
+          }
         } catch (error) {
           throw new APIError(
             `Category update failed: ${error instanceof Error ? error.message : String(error)}`,
             500,
             undefined,
-            true
+            true,
           )
         }
       },
     ],
     afterDelete: [
-      async ({ doc, req, context}) => {
+      async ({ doc, req, context }) => {
         try {
-
           if (context.skipHooks === true) {
             return
           }
@@ -143,7 +138,7 @@ export const Categories: CollectionConfig = {
 
             const siblings = await req.payload.findByID({
               collection: 'categories',
-              id: parentId
+              id: parentId,
             })
 
             // Update parent directly at database level
@@ -151,16 +146,15 @@ export const Categories: CollectionConfig = {
               collection: 'categories',
               id: parentId,
               data: {
-                children: (siblings.children ?? []).filter(
-                  (child) => typeof child === 'object'
-                    ? child.id !== doc.id
-                    : child !== doc.id
-                ) || undefined,
+                children:
+                  (siblings.children ?? []).filter((child) =>
+                    typeof child === 'object' ? child.id !== doc.id : child !== doc.id,
+                  ) || undefined,
               },
               req,
               context: {
                 skipHooks: true, // Skip hooks to avoid infinite loop
-              }
+              },
             })
           }
         } catch (error) {
@@ -168,7 +162,7 @@ export const Categories: CollectionConfig = {
             `Category delete failed: ${error instanceof Error ? error.message : String(error)}`,
             500,
             undefined,
-            false
+            false,
           )
         }
       },

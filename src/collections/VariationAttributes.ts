@@ -28,7 +28,7 @@ export const VariationAttributes: CollectionConfig = {
         {
           name: 'value',
           type: 'text',
-          unique: true
+          unique: true,
         },
       ],
       required: true,
@@ -44,7 +44,7 @@ export const VariationAttributes: CollectionConfig = {
       filterOptions: () => {
         return {
           children: {
-             exists: false,
+            exists: false,
           },
         }
       },
@@ -63,52 +63,52 @@ export const VariationAttributes: CollectionConfig = {
             return
           }
 
-          if(previousDoc?.categories){
-              const previousCategoryIds = previousDoc.categories.map((cat: any) =>
-                typeof cat === 'object' ? cat.id : cat,
-              )
+          if (previousDoc?.categories) {
+            const previousCategoryIds = previousDoc.categories.map((cat: any) =>
+              typeof cat === 'object' ? cat.id : cat,
+            )
 
-              const remmovedCategoryIds = previousCategoryIds.filter(
-                (id: string) => !categoryIds.includes(id)
-              )
-              
-              // Remove this variation attribute from categories that no longer include it
-              if (remmovedCategoryIds.length > 0) {
-                const categoriesToUpdate = await req.payload.find({
-                  collection: 'categories',
-                  where: {
-                    id: {
-                      in: remmovedCategoryIds,
-                    },
-                    variationAttributes: {
-                      in: doc.id,
-                    },
+            const remmovedCategoryIds = previousCategoryIds.filter(
+              (id: string) => !categoryIds.includes(id),
+            )
+
+            // Remove this variation attribute from categories that no longer include it
+            if (remmovedCategoryIds.length > 0) {
+              const categoriesToUpdate = await req.payload.find({
+                collection: 'categories',
+                where: {
+                  id: {
+                    in: remmovedCategoryIds,
                   },
-                })
+                  variationAttributes: {
+                    in: doc.id,
+                  },
+                },
+              })
 
-                if (categoriesToUpdate && Array.isArray(categoriesToUpdate.docs)) {
-                  for (const category of categoriesToUpdate.docs) {
-                    const updatedVariationAttributes = category.variationAttributes?.filter(
+              if (categoriesToUpdate && Array.isArray(categoriesToUpdate.docs)) {
+                for (const category of categoriesToUpdate.docs) {
+                  const updatedVariationAttributes =
+                    category.variationAttributes?.filter(
                       (attr) =>
-                        (typeof attr === 'object' && attr !== null ? attr.id : attr) !== doc.id
+                        (typeof attr === 'object' && attr !== null ? attr.id : attr) !== doc.id,
                     ) || []
 
-                    await req.payload.update({
-                      collection: 'categories',
-                      id: category.id,
-                      data: {
-                        variationAttributes: updatedVariationAttributes,
-                      },
-                      context: {
-                        skipHooks: true, // Skip hooks to avoid infinite loops
-                      },
-                      req
-                    })
-                  }
+                  await req.payload.update({
+                    collection: 'categories',
+                    id: category.id,
+                    data: {
+                      variationAttributes: updatedVariationAttributes,
+                    },
+                    context: {
+                      skipHooks: true, // Skip hooks to avoid infinite loops
+                    },
+                    req,
+                  })
                 }
               }
+            }
           }
-
 
           // Find all products in the relevant categories
           const categories = await req.payload.find({
@@ -123,21 +123,22 @@ export const VariationAttributes: CollectionConfig = {
           // Update each product individually
           if (categories && Array.isArray(categories.docs)) {
             for (const category of categories.docs) {
-              const categoryVariationAttributes = category.variationAttributes?.map((attr) =>
-                typeof attr === 'object' && attr !== null ? attr.id : attr
-              )?.filter(attr=>attr != doc.id) || []
+              const categoryVariationAttributes =
+                category.variationAttributes
+                  ?.map((attr) => (typeof attr === 'object' && attr !== null ? attr.id : attr))
+                  ?.filter((attr) => attr != doc.id) || []
 
               await req.payload.update({
-                  collection: 'categories',
-                  id: category.id,
-                  data: {
-                    variationAttributes: [...categoryVariationAttributes, doc.id],
-                  },
-                  context: {
-                    skipHooks: true, // Skip hooks to avoid infinite loops
-                  },
-                  req
-                })
+                collection: 'categories',
+                id: category.id,
+                data: {
+                  variationAttributes: [...categoryVariationAttributes, doc.id],
+                },
+                context: {
+                  skipHooks: true, // Skip hooks to avoid infinite loops
+                },
+                req,
+              })
             }
           }
         }
@@ -149,7 +150,7 @@ export const VariationAttributes: CollectionConfig = {
           if (context.skipHooks === true) {
             return
           }
-  
+
           // Remove this variation attribute from all categories that use it
           const categoriesToUpdate = await req.payload.find({
             collection: 'categories',
@@ -159,14 +160,14 @@ export const VariationAttributes: CollectionConfig = {
               },
             },
           })
-  
+
           if (categoriesToUpdate && Array.isArray(categoriesToUpdate.docs)) {
             for (const category of categoriesToUpdate.docs) {
-              const updatedVariationAttributes = category.variationAttributes?.filter(
-                (attr) =>
-                  (typeof attr === 'object' && attr !== null ? attr.id : attr) !== doc.id
-              ) || []
-  
+              const updatedVariationAttributes =
+                category.variationAttributes?.filter(
+                  (attr) => (typeof attr === 'object' && attr !== null ? attr.id : attr) !== doc.id,
+                ) || []
+
               await req.payload.update({
                 collection: 'categories',
                 id: category.id,
@@ -176,14 +177,14 @@ export const VariationAttributes: CollectionConfig = {
                 context: {
                   skipHooks: true, // Skip hooks to avoid infinite loops
                 },
-                req
+                req,
               })
             }
           }
         } catch (error) {
-          throw new APIError("error", 500, undefined, false);
+          throw new APIError('error', 500, undefined, false)
         }
-      }
-    ]
+      },
+    ],
   },
 }

@@ -180,17 +180,30 @@ export interface Media {
  */
 export interface Vendor {
   id: number;
-  shop_name: string;
+  'shop name': string;
   description?: string | null;
   logo?: (number | null) | Media;
-  website: string;
+  website?: string | null;
   email: string;
   phone?: string | null;
   address?: string | null;
   city?: string | null;
-  gps_code?: string | null;
-  zip_code?: string | null;
+  'gps code'?: string | null;
+  'zip code'?: string | null;
   country?: string | null;
+  'social media pages'?:
+    | {
+        'social media'?: ('Facebook' | 'Tiktok' | 'Instagram' | 'Snapchat') | null;
+        'page link'?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  'payment Method': 'Mobile Money';
+  'Mobile Money'?: {
+    Provider?: ('mtn' | 'telecel' | 'airtelTigo') | null;
+    'Account holder name'?: string | null;
+    'Phone Number'?: string | null;
+  };
   user: number | User;
   updatedAt: string;
   createdAt: string;
@@ -420,7 +433,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "vendors_select".
  */
 export interface VendorsSelect<T extends boolean = true> {
-  shop_name?: T;
+  'shop name'?: T;
   description?: T;
   logo?: T;
   website?: T;
@@ -428,9 +441,24 @@ export interface VendorsSelect<T extends boolean = true> {
   phone?: T;
   address?: T;
   city?: T;
-  gps_code?: T;
-  zip_code?: T;
+  'gps code'?: T;
+  'zip code'?: T;
   country?: T;
+  'social media pages'?:
+    | T
+    | {
+        'social media'?: T;
+        'page link'?: T;
+        id?: T;
+      };
+  'payment Method'?: T;
+  'Mobile Money'?:
+    | T
+    | {
+        Provider?: T;
+        'Account holder name'?: T;
+        'Phone Number'?: T;
+      };
   user?: T;
   updatedAt?: T;
   createdAt?: T;
