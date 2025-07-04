@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload'
+import { CollectionConfig, APIError } from 'payload'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
@@ -121,7 +121,12 @@ export const Categories: CollectionConfig = {
             }
          }
         } catch (error) {
-          console.error('Error in afterChange hook:', error)
+          throw new APIError(
+            `Category update failed: ${error instanceof Error ? error.message : String(error)}`,
+            500,
+            undefined,
+            true
+          )
         }
       },
     ],
@@ -159,7 +164,12 @@ export const Categories: CollectionConfig = {
             })
           }
         } catch (error) {
-          console.error('Error updating parent children after delete:', error)
+          throw new APIError(
+            `Category delete failed: ${error instanceof Error ? error.message : String(error)}`,
+            500,
+            undefined,
+            false
+          )
         }
       },
     ],
