@@ -14,3 +14,10 @@ export const PAYMENT_METHOD_MOBILE_MONEY = {
 export type MobileMoneyProvider =
   (typeof PAYMENT_METHOD_MOBILE_MONEY)[keyof typeof PAYMENT_METHOD_MOBILE_MONEY]
 export const PAYMENT_METHOD_MOBILE_MONEY_OPTIONS = Object.keys(PAYMENT_METHOD_MOBILE_MONEY)
+
+export const CURRENCY_OPTIONS = [
+  { label: 'USD', value: 'USD' },
+  { label: 'EUR', value: 'EUR' },
+  { label: 'GHS', value: 'GHS' },
+  // Add more as needed
+]

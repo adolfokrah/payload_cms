@@ -1,6 +1,7 @@
 import { APIError, type CollectionConfig } from 'payload'
 import type { ProductVariation } from '@/common/lib/types'
 import { PRODUCT_VARIATION_SELECTOR } from '@/common/constants/fields'
+import { CURRENCY_OPTIONS } from '@/common/constants/payments'
 
 export const Products: CollectionConfig = {
   slug: 'products',
@@ -27,7 +28,14 @@ export const Products: CollectionConfig = {
       },
     },
     { name: 'brand', type: 'relationship', relationTo: 'brands' },
+
     { name: 'photos', type: 'upload', relationTo: 'media', hasMany: true },
+    {
+      name: 'product price currency',
+      type: 'select',
+      options: CURRENCY_OPTIONS,
+      required: true,
+    },
     {
       name: 'variations',
       type: 'json',
@@ -43,16 +51,9 @@ export const Products: CollectionConfig = {
       ({ data }) => {
         const variations: ProductVariation[] = data.variations || []
 
-
         if (Array.isArray(variations)) {
-
-          if(!variations.length){
-            throw new APIError(
-              `Please add some varations`,
-              500,
-              undefined,
-              true,
-            )
+          if (!variations.length) {
+            throw new APIError(`Please add some varations`, 500, undefined, true)
           }
 
           // Get attribute keys (exclude metaData)
@@ -90,7 +91,6 @@ export const Products: CollectionConfig = {
             }
           }
         }
-        console.log(variations)
         for (let i = 0; i < variations.length; i++) {
           if (!variations[i].isComplete) {
             throw new APIError(`Variation ${i + 1} is incomplete.`, 500, undefined, true)

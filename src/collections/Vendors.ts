@@ -70,13 +70,20 @@ export const Vendors: CollectionConfig = {
       required: true,
       unique: true,
       filterOptions: ({ data }) => {
-        const filters: any[] = [];
-        filters.push({ role: { not_equals: 'vendor' } });
-        const currentUser = data?.user;
+        const filters: any[] = []
+        filters.push({ role: { not_equals: 'vendor' } })
+        const currentUser = data?.user
         if (currentUser) {
-          filters.push({ id: { equals: typeof currentUser === 'object' && currentUser !== null ? currentUser.id : currentUser } });
+          filters.push({
+            id: {
+              equals:
+                typeof currentUser === 'object' && currentUser !== null
+                  ? currentUser.id
+                  : currentUser,
+            },
+          })
         }
-        return { or: filters };
+        return { or: filters }
       },
     },
   ],

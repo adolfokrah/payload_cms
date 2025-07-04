@@ -6,7 +6,6 @@ import { isDuplicateVariation } from '@/common/utils/is_duplicate_variation'
 import { useProductVariationSelector } from '@/common/hooks/useProductVariationSelector'
 import { RESERVED_NAMES } from '@/common/constants/products'
 
-
 const ProductVariationSelector: React.FC<ProductVariationSelectorProps> = ({ path }) => {
   const REQUIRED_META_FIELDS = ['purchasePrice', 'sellingPrice']
   const {
@@ -40,7 +39,7 @@ const ProductVariationSelector: React.FC<ProductVariationSelectorProps> = ({ pat
 
   return (
     <div>
-      <label className="field-label">Varations [{variations.length}]</label>
+      <h3 style={{ marginBottom: 10 }}>Variations [{variations.length}]</h3>
       {(variations || []).map((variation, idx) => {
         const isDuplicate = isDuplicateVariation(variations, variation, idx, attributeNames)
         return (
@@ -91,7 +90,6 @@ const ProductVariationSelector: React.FC<ProductVariationSelectorProps> = ({ pat
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
-              {/* Price fields */}
               <TextInput
                 path={`${path}.${idx}.metaData.purchasePrice`}
                 required

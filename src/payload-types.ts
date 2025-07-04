@@ -294,6 +294,7 @@ export interface Product {
   category: number | Category;
   brand?: (number | null) | Brand;
   photos?: (number | Media)[] | null;
+  'product price currency': 'USD' | 'EUR' | 'GHS';
   variations?:
     | {
         [k: string]: unknown;
@@ -495,6 +496,7 @@ export interface ProductsSelect<T extends boolean = true> {
   category?: T;
   brand?: T;
   photos?: T;
+  'product price currency'?: T;
   variations?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -4,6 +4,7 @@ export interface ProductVariationMetaData {
   purchasePrice: number | string
   sellingPrice: number | string
   discountedPrice?: number | string
+  currency?: string
   trackStock?: boolean
   stock?: number | string
   photos?: number[]
