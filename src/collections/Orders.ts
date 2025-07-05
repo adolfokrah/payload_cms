@@ -2,7 +2,7 @@ import { APIError, type CollectionConfig } from 'payload'
 import { ORDER_STATUS_OPTIONS } from '@/common/constants/orders'
 import { processCartVariation } from '@/common/utils/match_cart_variation'
 import { CartSelectedVariation, ProductVariationWithMeta } from '@/common/lib/types'
-import { ApiError } from 'next/dist/server/api-utils'
+import { cartItemVariationBeforeChange } from '@/common/utils/process_cart_item_variation'
 
 export const Orders: CollectionConfig = {
   slug: 'orders',
@@ -32,69 +32,18 @@ export const Orders: CollectionConfig = {
           required: true,
         },
         {
-          name: 'order_items_selected_variation',
+          name: 'selected_variation',
           label: 'Selected Variation',
           type: 'json',
           hooks: {
             beforeChange: [
               async ({ data, req, siblingData, operation }) => {
-                // Only process during create operations
-
-                if (operation == 'create') {
-                  try {
-                    // Get the product ID from the sibling data (same array item)
-                    const productId = siblingData?.product
-
-                    if (!productId || !data) {
-                      return data
-                    }
-
-                    // The incoming data should be like: { "Color": "Apricot", "Size [S]": "S" }
-                    const selectedVariation =
-                      siblingData?.order_items_selected_variation as CartSelectedVariation
-
-                    // Fetch the product with its variations
-                    const product = await req.payload.findByID({
-                      collection: 'products',
-                      id: productId,
-                    })
-
-                    if (!product || !product.variations) {
-                      console.log('Product not found or no variations')
-                      return data
-                    }
-
-                    // Use the utility function to match and get the price
-                    const processedVariation = processCartVariation(
-                      selectedVariation as CartSelectedVariation,
-                      product.variations as ProductVariationWithMeta[],
-                    )
-
-                    if (processedVariation) {
-                      // Return the original variation data plus the price
-                      const finalVariation = {
-                        ...selectedVariation,
-                        price:
-                          Number(processedVariation.selected_variation.metaData.discountedPrice) ||
-                          Number(processedVariation.selected_variation.metaData.sellingPrice) ||
-                          0,
-                      }
-
-                      console.log('Final variation with price:', finalVariation)
-                      return finalVariation
-                    }
-
-                    throw new APIError(
-                      `Incorrect variation supplied for product "${product.title}"`,
-                      400,
-                      undefined,
-                      true,
-                    )
-                  } catch (error) {
-                    console.error('Error processing order item variation:', error)
-                    return data
-                  }
-                }
+                return await cartItemVariationBeforeChange({
+                  data,
+                  req,
+                  siblingData,
+                  operation: operation || 'unknown',
+                })
               },
             ],
           },
@@ -152,7 +101,7 @@ export const Orders: CollectionConfig = {
         if (operation === 'create' && doc.orderedBy) {
           // Skip if we're already processing cart deletion to avoid infinite loops
           if (context?.deletingCart) return
-          
+
           try {
             // Find the user's cart
             const userCart = await req.payload.find({
@@ -164,7 +113,7 @@ export const Orders: CollectionConfig = {
               },
               limit: 1,
             })
-            
+
             // Delete the cart if it exists
             if (userCart.docs.length > 0) {
               await req.payload.delete({
@@ -172,16 +121,16 @@ export const Orders: CollectionConfig = {
                 id: userCart.docs[0].id,
                 context: {
                   deletingCart: true, // Prevent infinite loops
-                }
+                },
               })
-              
+
               console.log(`Cart deleted for user ${doc.orderedBy} after order creation`)
             }
           } catch (error) {
             console.error('Error deleting user cart after order creation:', error)
           }
         }
-      }
-    ]
-  }
+      },
+    ],
+  },
 }

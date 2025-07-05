@@ -377,7 +377,7 @@ export interface Order {
     | {
         product: number | Product;
         quantity: number;
-        order_items_selected_variation?:
+        selected_variation?:
           | {
               [k: string]: unknown;
             }
@@ -673,7 +673,7 @@ export interface OrdersSelect<T extends boolean = true> {
     | {
         product?: T;
         quantity?: T;
-        order_items_selected_variation?: T;
+        selected_variation?: T;
         id?: T;
       };
   shipping_address?: T;
