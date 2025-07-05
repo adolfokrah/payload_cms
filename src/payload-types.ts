@@ -231,6 +231,10 @@ export interface Address {
  */
 export interface PaymentMethod {
   id: number;
+  /**
+   * Auto-generated display name for this payment method
+   */
+  display_name?: string | null;
   payment_method: 'Mobile Money';
   mobile_money?: {
     provider?: ('MTN' | 'Telecel' | 'AirtelTigo') | null;
@@ -389,8 +393,24 @@ export interface Order {
         id?: string | null;
       }[]
     | null;
-  shipping_address: number | Address;
-  payment_method: number | PaymentMethod;
+  shipping_address:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  payment_method:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   status?: ('processing' | 'out_for_delivery' | 'completed' | 'cancelled') | null;
   updatedAt: string;
   createdAt: string;
@@ -650,6 +670,7 @@ export interface AddressesSelect<T extends boolean = true> {
  * via the `definition` "payment_methods_select".
  */
 export interface PaymentMethodsSelect<T extends boolean = true> {
+  display_name?: T;
   payment_method?: T;
   mobile_money?:
     | T

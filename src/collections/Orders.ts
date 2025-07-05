@@ -1,7 +1,5 @@
-import { APIError, type CollectionConfig } from 'payload'
+import { type CollectionConfig } from 'payload'
 import { ORDER_STATUS_OPTIONS } from '@/common/constants/orders'
-import { processCartVariation } from '@/common/utils/match_cart_variation'
-import { CartSelectedVariation, ProductVariationWithMeta } from '@/common/lib/types'
 import { cartItemVariationBeforeChange } from '@/common/utils/process_cart_item_variation'
 
 export const Orders: CollectionConfig = {
@@ -56,36 +54,14 @@ export const Orders: CollectionConfig = {
     {
       name: 'shipping_address',
       label: 'Shipping Address',
-      type: 'relationship',
-      relationTo: 'addresses',
+      type: 'json',
       required: true,
-      filterOptions: ({ data }) => {
-        if (data?.orderedBy) {
-          return {
-            user: {
-              equals: data.orderedBy,
-            },
-          }
-        }
-        return false
-      },
     },
     {
       name: 'payment_method',
-      type: 'relationship',
+      type: 'json',
       label: 'Payment Method',
-      relationTo: 'payment_methods',
       required: true,
-      filterOptions: ({ data }) => {
-        if (data?.orderedBy) {
-          return {
-            user: {
-              equals: data.orderedBy,
-            },
-          }
-        }
-        return false
-      },
     },
     {
       name: 'status',

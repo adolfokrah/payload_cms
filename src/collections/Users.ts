@@ -110,6 +110,9 @@ export const Users: CollectionConfig = {
       type: 'relationship',
       relationTo: 'addresses',
       hasMany: true,
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'payment_methods',
@@ -117,15 +120,8 @@ export const Users: CollectionConfig = {
       label: 'Payment Methods',
       relationTo: 'payment_methods',
       hasMany: true,
-      filterOptions: ({ data }) => {
-        if (data?.id) {
-          return {
-            user: {
-              equals: data.id,
-            },
-          }
-        }
-        return false
+      admin: {
+        readOnly: true,
       },
     },
   ],
