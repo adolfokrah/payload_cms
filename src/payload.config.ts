@@ -19,6 +19,7 @@ import { Carts } from './collections/Carts'
 import { Addresses } from './collections/Addresses'
 import { PaymentMethods } from './collections/PaymentMethods'
 import { Orders } from './collections/Orders'
+import { ProductReviews } from './collections/ProductReviews'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -42,6 +43,7 @@ export default buildConfig({
     Addresses,
     PaymentMethods,
     Orders,
+    ProductReviews
   ],
   editor: lexicalEditor({}),
   secret: process.env.PAYLOAD_SECRET || '',

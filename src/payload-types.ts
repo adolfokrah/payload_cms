@@ -78,6 +78,7 @@ export interface Config {
     addresses: Address;
     payment_methods: PaymentMethod;
     orders: Order;
+    product_reviews: ProductReview;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -95,6 +96,7 @@ export interface Config {
     addresses: AddressesSelect<false> | AddressesSelect<true>;
     payment_methods: PaymentMethodsSelect<false> | PaymentMethodsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
+    product_reviews: ProductReviewsSelect<false> | ProductReviewsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -421,6 +423,19 @@ export interface Order {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product_reviews".
+ */
+export interface ProductReview {
+  id: number;
+  user: number | User;
+  product: number | Product;
+  rating: number;
+  review_text: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -469,6 +484,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'orders';
         value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'product_reviews';
+        value: number | ProductReview;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -705,6 +724,18 @@ export interface OrdersSelect<T extends boolean = true> {
   shipping_address?: T;
   payment_method?: T;
   status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product_reviews_select".
+ */
+export interface ProductReviewsSelect<T extends boolean = true> {
+  user?: T;
+  product?: T;
+  rating?: T;
+  review_text?: T;
   updatedAt?: T;
   createdAt?: T;
 }
