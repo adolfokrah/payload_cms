@@ -36,31 +36,36 @@ export const Vendors: CollectionConfig = {
       ],
     },
     {
-      name: 'payment Method',
+      name: 'payment_method',
+      label: 'Payment Method',
       type: 'select',
       required: true,
       options: PAYMENT_METHOD_OPTIONS,
     },
     {
-      name: 'Mobile Money',
+      name: 'mobile_money',
+      label: 'Mobile Money Details',
       type: 'group',
       fields: [
         {
-          name: 'Provider',
+          name: 'provider',
+          label: 'Provider',
           type: 'select',
           options: PAYMENT_METHOD_MOBILE_MONEY_OPTIONS,
         },
         {
-          name: 'Account holder name',
+          label: 'Account holder name',
+          name: 'account_holder_name',
           type: 'text',
         },
         {
-          name: 'Phone Number',
+          label: 'Phone Number',
+          name: 'phone_number',
           type: 'text',
         },
       ],
       admin: {
-        condition: (data) => data?.['payment Method'] == PAYMENT_METHODS.mobileMoney,
+        condition: (_, siblings) => siblings?.payment_method == PAYMENT_METHODS.mobileMoney,
       },
     },
     {
