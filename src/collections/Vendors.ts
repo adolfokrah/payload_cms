@@ -15,59 +15,6 @@ export const Vendors: CollectionConfig = {
     { name: 'website', type: 'text', required: false },
     { name: 'email', type: 'email', required: true, unique: true },
     { name: 'phone', type: 'text' },
-    { name: 'address', type: 'text' },
-    { name: 'city', type: 'text' },
-    { name: 'gps code', type: 'text' },
-    { name: 'zip code', type: 'text' },
-    { name: 'country', type: 'text' },
-    {
-      name: 'social media pages',
-      type: 'array',
-      fields: [
-        {
-          name: 'social media',
-          type: 'select',
-          options: ['Facebook', 'Tiktok', 'Instagram', 'Snapchat'],
-        },
-        {
-          name: 'page link',
-          type: 'text',
-        },
-      ],
-    },
-    {
-      name: 'payment_method',
-      label: 'Payment Method',
-      type: 'select',
-      required: true,
-      options: PAYMENT_METHOD_OPTIONS,
-    },
-    {
-      name: 'mobile_money',
-      label: 'Mobile Money Details',
-      type: 'group',
-      fields: [
-        {
-          name: 'provider',
-          label: 'Provider',
-          type: 'select',
-          options: PAYMENT_METHOD_MOBILE_MONEY_OPTIONS,
-        },
-        {
-          label: 'Account holder name',
-          name: 'account_holder_name',
-          type: 'text',
-        },
-        {
-          label: 'Phone Number',
-          name: 'phone_number',
-          type: 'text',
-        },
-      ],
-      admin: {
-        condition: (_, siblings) => siblings?.payment_method == PAYMENT_METHODS.mobileMoney,
-      },
-    },
     {
       name: 'user',
       type: 'relationship',
@@ -91,6 +38,54 @@ export const Vendors: CollectionConfig = {
         return { or: filters }
       },
     },
+    {
+      name: 'address',
+      type: 'relationship',
+      relationTo: 'addresses',
+      required: true,
+      filterOptions: ({ data }) => {
+        if (data?.user) {
+          return {
+            user: {
+              equals: data.user,
+            },
+          }
+        }
+        return false
+      },
+    },
+    {
+      name: 'social_media_pages',
+      label: 'Social Media Pages',
+      type: 'array',
+      fields: [
+        {
+          name: 'social media',
+          type: 'select',
+          options: ['Facebook', 'Tiktok', 'Instagram', 'Snapchat'],
+        },
+        {
+          name: 'page link',
+          type: 'text',
+        },
+      ],
+    },
+    {
+      name: 'payment_method',
+      label: 'Payment Method',
+      type: 'relationship',
+      relationTo: 'payment_methods',
+      filterOptions: ({ data }) => {
+        if (data?.user) {
+          return {
+            user: {
+              equals: data.user,
+            },
+          }
+        }
+        return false
+      },
+    }
   ],
   hooks: {
     afterChange: [

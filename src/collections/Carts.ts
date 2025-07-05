@@ -32,6 +32,7 @@ export const Carts: CollectionConfig = {
         },
         {
           name: 'selected_variation',
+          label: 'Selected Variation',
           type: 'json',
         },
       ],

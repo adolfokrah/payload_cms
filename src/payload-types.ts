@@ -75,6 +75,8 @@ export interface Config {
     products: Product;
     'variation-attributes': VariationAttribute;
     carts: Cart;
+    addresses: Address;
+    payment_methods: PaymentMethod;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -89,6 +91,8 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     'variation-attributes': VariationAttributesSelect<false> | VariationAttributesSelect<true>;
     carts: CartsSelect<false> | CartsSelect<true>;
+    addresses: AddressesSelect<false> | AddressesSelect<true>;
+    payment_methods: PaymentMethodsSelect<false> | PaymentMethodsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -139,41 +143,9 @@ export interface User {
    * Automatically linked to your vendor profile
    */
   vendor_profile?: (number | null) | Vendor;
-  addresses?: {
-    shipping_addresses?:
-      | {
-          addressLine1: string;
-          addressLine2?: string | null;
-          city: string;
-          state?: string | null;
-          postalCode: string;
-          country: string;
-          id?: string | null;
-        }[]
-      | null;
-    billing_addresses?:
-      | {
-          addressLine1: string;
-          addressLine2?: string | null;
-          city: string;
-          state?: string | null;
-          postalCode: string;
-          country: string;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  payment_methods?:
-    | {
-        payment_method: 'Mobile Money';
-        mobile_money?: {
-          provider?: ('MTN' | 'Telecel' | 'AirtelTigo') | null;
-          account_holder_name?: string | null;
-          phone_number?: string | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
+  shipping_addresses?: (number | Address)[] | null;
+  billing_addresses?: (number | Address)[] | null;
+  payment_methods?: (number | PaymentMethod)[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -223,18 +195,41 @@ export interface Vendor {
   website?: string | null;
   email: string;
   phone?: string | null;
-  address?: string | null;
-  city?: string | null;
-  'gps code'?: string | null;
-  'zip code'?: string | null;
-  country?: string | null;
-  'social media pages'?:
+  user: number | User;
+  address: number | Address;
+  social_media_pages?:
     | {
         'social media'?: ('Facebook' | 'Tiktok' | 'Instagram' | 'Snapchat') | null;
         'page link'?: string | null;
         id?: string | null;
       }[]
     | null;
+  payment_method?: (number | null) | PaymentMethod;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "addresses".
+ */
+export interface Address {
+  id: number;
+  addressLine1: string;
+  addressLine2?: string | null;
+  city: string;
+  state?: string | null;
+  postalCode: string;
+  country: string;
+  user: number | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment_methods".
+ */
+export interface PaymentMethod {
+  id: number;
   payment_method: 'Mobile Money';
   mobile_money?: {
     provider?: ('MTN' | 'Telecel' | 'AirtelTigo') | null;
@@ -408,6 +403,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'carts';
         value: number | Cart;
+      } | null)
+    | ({
+        relationTo: 'addresses';
+        value: number | Address;
+      } | null)
+    | ({
+        relationTo: 'payment_methods';
+        value: number | PaymentMethod;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -461,45 +464,9 @@ export interface UsersSelect<T extends boolean = true> {
   role?: T;
   profilePicture?: T;
   vendor_profile?: T;
-  addresses?:
-    | T
-    | {
-        shipping_addresses?:
-          | T
-          | {
-              addressLine1?: T;
-              addressLine2?: T;
-              city?: T;
-              state?: T;
-              postalCode?: T;
-              country?: T;
-              id?: T;
-            };
-        billing_addresses?:
-          | T
-          | {
-              addressLine1?: T;
-              addressLine2?: T;
-              city?: T;
-              state?: T;
-              postalCode?: T;
-              country?: T;
-              id?: T;
-            };
-      };
-  payment_methods?:
-    | T
-    | {
-        payment_method?: T;
-        mobile_money?:
-          | T
-          | {
-              provider?: T;
-              account_holder_name?: T;
-              phone_number?: T;
-            };
-        id?: T;
-      };
+  shipping_addresses?: T;
+  billing_addresses?: T;
+  payment_methods?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -546,12 +513,9 @@ export interface VendorsSelect<T extends boolean = true> {
   website?: T;
   email?: T;
   phone?: T;
+  user?: T;
   address?: T;
-  city?: T;
-  'gps code'?: T;
-  'zip code'?: T;
-  country?: T;
-  'social media pages'?:
+  social_media_pages?:
     | T
     | {
         'social media'?: T;
@@ -559,14 +523,6 @@ export interface VendorsSelect<T extends boolean = true> {
         id?: T;
       };
   payment_method?: T;
-  mobile_money?:
-    | T
-    | {
-        provider?: T;
-        account_holder_name?: T;
-        phone_number?: T;
-      };
-  user?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -638,6 +594,38 @@ export interface CartsSelect<T extends boolean = true> {
         selected_variation?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "addresses_select".
+ */
+export interface AddressesSelect<T extends boolean = true> {
+  addressLine1?: T;
+  addressLine2?: T;
+  city?: T;
+  state?: T;
+  postalCode?: T;
+  country?: T;
+  user?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment_methods_select".
+ */
+export interface PaymentMethodsSelect<T extends boolean = true> {
+  payment_method?: T;
+  mobile_money?:
+    | T
+    | {
+        provider?: T;
+        account_holder_name?: T;
+        phone_number?: T;
+      };
+  user?: T;
   updatedAt?: T;
   createdAt?: T;
 }

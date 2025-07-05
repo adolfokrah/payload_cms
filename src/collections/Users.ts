@@ -1,8 +1,3 @@
-import {
-  PAYMENT_METHOD_MOBILE_MONEY_OPTIONS,
-  PAYMENT_METHOD_OPTIONS,
-  PAYMENT_METHODS,
-} from '@/common/constants/payments'
 import type { CollectionConfig } from 'payload'
 
 export const Users: CollectionConfig = {
@@ -110,132 +105,35 @@ export const Users: CollectionConfig = {
       },
     },
     {
-      name: 'addresses',
-      type: 'group',
-      fields: [
-        {
-          name: 'shipping_addresses',
-          label: 'Shipping Addresses',
-          type: 'array',
-          fields: [
-            {
-              name: 'addressLine1',
-              type: 'text',
-              required: true,
-              label: 'Address Line 1',
-            },
-            {
-              name: 'addressLine2',
-              type: 'text',
-              label: 'Address Line 2',
-            },
-            {
-              name: 'city',
-              type: 'text',
-              required: true,
-              label: 'City',
-            },
-            {
-              name: 'state',
-              type: 'text',
-              label: 'State/Province/Region',
-            },
-            {
-              name: 'postalCode',
-              type: 'text',
-              required: true,
-              label: 'Postal Code',
-            },
-            {
-              name: 'country',
-              type: 'text',
-              required: true,
-              label: 'Country',
-            },
-          ],
-        },
-        {
-          name: 'billing_addresses',
-          label: 'Billing Addresses',
-          type: 'array',
-          fields: [
-            {
-              name: 'addressLine1',
-              type: 'text',
-              required: true,
-              label: 'Address Line 1',
-            },
-            {
-              name: 'addressLine2',
-              type: 'text',
-              label: 'Address Line 2',
-            },
-            {
-              name: 'city',
-              type: 'text',
-              required: true,
-              label: 'City',
-            },
-            {
-              name: 'state',
-              type: 'text',
-              label: 'State/Province/Region',
-            },
-            {
-              name: 'postalCode',
-              type: 'text',
-              required: true,
-              label: 'Postal Code',
-            },
-            {
-              name: 'country',
-              type: 'text',
-              required: true,
-              label: 'Country',
-            },
-          ],
-        },
-      ],
+      name: 'shipping_addresses',
+      label: 'Shipping Addresses',
+      type: 'relationship',
+      relationTo: 'addresses',
+      hasMany: true,
+    },
+    {
+      name: 'billing_addresses',
+      label: 'Billing Addresses',
+      type: 'relationship',
+      relationTo: 'addresses',
+      hasMany: true,
     },
     {
       name: 'payment_methods',
-      type: 'array',
+      type: 'relationship',
       label: 'Payment Methods',
-      fields: [
-        {
-          name: 'payment_method',
-          label: 'Payment Method',
-          type: 'select',
-          required: true,
-          options: PAYMENT_METHOD_OPTIONS,
-        },
-        {
-          name: 'mobile_money',
-          label: 'Mobile Money Details',
-          type: 'group',
-          fields: [
-            {
-              name: 'provider',
-              label: 'Provider',
-              type: 'select',
-              options: PAYMENT_METHOD_MOBILE_MONEY_OPTIONS,
+      relationTo: 'payment_methods',
+      hasMany: true,
+      filterOptions: ({ data }) => {
+        if (data?.id) {
+          return {
+            user: {
+              equals: data.id,
             },
-            {
-              label: 'Account holder name',
-              name: 'account_holder_name',
-              type: 'text',
-            },
-            {
-              label: 'Phone Number',
-              name: 'phone_number',
-              type: 'text',
-            },
-          ],
-          admin: {
-            condition: (_, siblings) => siblings?.payment_method == PAYMENT_METHODS.mobileMoney,
-          },
-        },
-      ],
+          }
+        }
+        return false
+      },
     },
   ],
 }
