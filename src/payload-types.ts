@@ -253,6 +253,10 @@ export interface Category {
   id: number;
   title: string;
   /**
+   * Auto-generated hierarchy path showing parent categories
+   */
+  display_name?: string | null;
+  /**
    * Select parent category (only after save). Leave empty for main category. eg. Women, Men, Kids
    */
   parent?: (number | null) | Category;
@@ -585,6 +589,7 @@ export interface VendorsSelect<T extends boolean = true> {
  */
 export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
+  display_name?: T;
   parent?: T;
   children?: T;
   variationAttributes?: T;

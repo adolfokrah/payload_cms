@@ -1,4 +1,5 @@
 import { CollectionConfig, APIError } from 'payload'
+import { buildCategoryHierarchy } from '../common/utils/build_category_hierarchy'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
@@ -6,8 +7,8 @@ export const Categories: CollectionConfig = {
     update: () => true, // allow anyone to update for now
   },
   admin: {
-    useAsTitle: 'title',
-    defaultColumns: ['title', 'parent'],
+    useAsTitle: 'display_name',
+    defaultColumns: ['display_name', 'title', 'parent'],
   },
   fields: [
     {
@@ -15,6 +16,45 @@ export const Categories: CollectionConfig = {
       type: 'text',
       required: true,
     },
+    {
+      name: 'display_name',
+      label: 'Category Hierarchy',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        description: 'Auto-generated hierarchy path showing parent categories',
+      },
+      hooks: {
+        beforeChange: [
+          async ({ data, siblingData, req }) => {
+            // Generate display name based on category hierarchy
+            const categoryTitle = siblingData?.title || data
+
+            if (siblingData?.parent) {
+              try {
+                // Build hierarchy using recursive function
+                const result = await buildCategoryHierarchy(
+                  req.payload,
+                  siblingData.parent,
+                  categoryTitle,
+                  new Set() // Track visited IDs to prevent circular references
+                )
+                console.log(`Building hierarchy for "${categoryTitle}":`, result)
+                return result
+              } catch (error) {
+                console.error('Error building category hierarchy:', error)
+                return categoryTitle
+              }
+            }
+
+            // No parent, just return the title
+            console.log(`No parent for "${categoryTitle}", returning title only`)
+            return categoryTitle
+          },
+        ],
+      },
+    },
+
     {
       name: 'parent',
       type: 'relationship',
@@ -24,7 +64,6 @@ export const Categories: CollectionConfig = {
         id: { not_equals: id },
       }),
       admin: {
-        condition: (_, { id }) => Boolean(id),
         description:
           'Select parent category (only after save). Leave empty for main category. eg. Women, Men, Kids',
       },
@@ -64,6 +103,36 @@ export const Categories: CollectionConfig = {
               return
             }
 
+            // Update children's display names if this category's hierarchy changed
+            if (doc?.children && Array.isArray(doc.children)) {
+              for (const child of doc.children) {
+                const childId = typeof child === 'object' ? child.id : child
+                try {
+                  // Force update the child to regenerate its display name
+                  const childDoc = await req.payload.findByID({
+                    collection: 'categories',
+                    id: childId
+                  })
+                  
+                  if (childDoc) {
+                    await req.payload.update({
+                      collection: 'categories',
+                      id: childId,
+                      data: {
+                        title: childDoc.title // This will trigger the beforeChange hook
+                      },
+                      context: {
+                        skipHooks: false, // Allow hooks to run to update display_name
+                      }
+                    })
+                    console.log(`Updated child category ${childDoc.title} display name`)
+                  }
+                } catch (childError) {
+                  console.error(`Error updating child category ${childId}:`, childError)
+                }
+              }
+            }
+
             if (previousDoc?.parent && previousDoc?.parent !== doc?.parent) {
               // If parent has changed, remove this category from the old parent's children
               const oldParent = await req.payload.findByID({
@@ -98,22 +167,32 @@ export const Categories: CollectionConfig = {
               })
 
               if (foundParent) {
-                const children = foundParent?.children
-
-                await req.payload.update({
-                  collection: 'categories',
-                  id: doc?.parent,
-                  data: {
-                    children: children ? [...children, doc?.id] : [doc?.id],
-                  },
-                  context: {
-                    skipHooks: true, // Skip hooks to avoid infinite loop
-                  },
-                  req,
-                })
+                const children = foundParent?.children || []
+                const childIds = children.map(child => 
+                  typeof child === 'object' ? child.id : child
+                )
+                
+                // Add current document if not already in children
+                if (!childIds.includes(doc.id)) {
+                  const updatedChildren = [...children, doc.id]
+                  
+                  await req.payload.update({
+                    collection: 'categories',
+                    id: doc?.parent,
+                    data: {
+                      children: updatedChildren,
+                    },
+                    context: {
+                      skipHooks: true, // Skip hooks to avoid infinite loop
+                    },
+                    req,
+                  })
+                  
+                  console.log(`Added ${doc.title} to parent ${foundParent.title} children`)
+                }
               }
             } else {
-              console.log('not fond parent')
+              console.log('No parent selected')
             }
           }
         } catch (error) {
