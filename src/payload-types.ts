@@ -59,187 +59,191 @@ export type SupportedTimezones =
   | 'Pacific/Guam'
   | 'Pacific/Noumea'
   | 'Pacific/Auckland'
-  | 'Pacific/Fiji';
+  | 'Pacific/Fiji'
 
 export interface Config {
   auth: {
-    users: UserAuthOperations;
-  };
-  blocks: {};
+    users: UserAuthOperations
+  }
+  blocks: {}
   collections: {
-    users: User;
-    media: Media;
-    vendors: Vendor;
-    categories: Category;
-    brands: Brand;
-    products: Product;
-    'variation-attributes': VariationAttribute;
-    'payload-locked-documents': PayloadLockedDocument;
-    'payload-preferences': PayloadPreference;
-    'payload-migrations': PayloadMigration;
-  };
-  collectionsJoins: {};
+    users: User
+    media: Media
+    vendors: Vendor
+    categories: Category
+    brands: Brand
+    products: Product
+    'variation-attributes': VariationAttribute
+    carts: Cart
+    'payload-locked-documents': PayloadLockedDocument
+    'payload-preferences': PayloadPreference
+    'payload-migrations': PayloadMigration
+  }
+  collectionsJoins: {}
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    vendors: VendorsSelect<false> | VendorsSelect<true>;
-    categories: CategoriesSelect<false> | CategoriesSelect<true>;
-    brands: BrandsSelect<false> | BrandsSelect<true>;
-    products: ProductsSelect<false> | ProductsSelect<true>;
-    'variation-attributes': VariationAttributesSelect<false> | VariationAttributesSelect<true>;
-    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
-    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
-    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
-  };
+    users: UsersSelect<false> | UsersSelect<true>
+    media: MediaSelect<false> | MediaSelect<true>
+    vendors: VendorsSelect<false> | VendorsSelect<true>
+    categories: CategoriesSelect<false> | CategoriesSelect<true>
+    brands: BrandsSelect<false> | BrandsSelect<true>
+    products: ProductsSelect<false> | ProductsSelect<true>
+    'variation-attributes': VariationAttributesSelect<false> | VariationAttributesSelect<true>
+    carts: CartsSelect<false> | CartsSelect<true>
+    'payload-locked-documents':
+      | PayloadLockedDocumentsSelect<false>
+      | PayloadLockedDocumentsSelect<true>
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>
+  }
   db: {
-    defaultIDType: number;
-  };
-  globals: {};
-  globalsSelect: {};
-  locale: null;
+    defaultIDType: number
+  }
+  globals: {}
+  globalsSelect: {}
+  locale: null
   user: User & {
-    collection: 'users';
-  };
+    collection: 'users'
+  }
   jobs: {
-    tasks: unknown;
-    workflows: unknown;
-  };
+    tasks: unknown
+    workflows: unknown
+  }
 }
 export interface UserAuthOperations {
   forgotPassword: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   login: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   registerFirstUser: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   unlock: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  role: 'buyer' | 'vendor' | 'admin';
-  profilePicture?: (number | null) | Media;
+  id: number
+  firstName: string
+  lastName: string
+  role: 'buyer' | 'vendor' | 'admin'
+  profilePicture?: (number | null) | Media
   /**
    * Automatically linked to your vendor profile
    */
-  vendor_profile?: (number | null) | Vendor;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
+  vendor_profile?: (number | null) | Vendor
+  updatedAt: string
+  createdAt: string
+  email: string
+  resetPasswordToken?: string | null
+  resetPasswordExpiration?: string | null
+  salt?: string | null
+  hash?: string | null
+  loginAttempts?: number | null
+  lockUntil?: string | null
   sessions?:
     | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
+        id: string
+        createdAt?: string | null
+        expiresAt: string
       }[]
-    | null;
-  password?: string | null;
+    | null
+  password?: string | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+  id: number
+  alt: string
+  updatedAt: string
+  createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "vendors".
  */
 export interface Vendor {
-  id: number;
-  'shop name': string;
-  description?: string | null;
-  logo?: (number | null) | Media;
-  website?: string | null;
-  email: string;
-  phone?: string | null;
-  address?: string | null;
-  city?: string | null;
-  'gps code'?: string | null;
-  'zip code'?: string | null;
-  country?: string | null;
+  id: number
+  'shop name': string
+  description?: string | null
+  logo?: (number | null) | Media
+  website?: string | null
+  email: string
+  phone?: string | null
+  address?: string | null
+  city?: string | null
+  'gps code'?: string | null
+  'zip code'?: string | null
+  country?: string | null
   'social media pages'?:
     | {
-        'social media'?: ('Facebook' | 'Tiktok' | 'Instagram' | 'Snapchat') | null;
-        'page link'?: string | null;
-        id?: string | null;
+        'social media'?: ('Facebook' | 'Tiktok' | 'Instagram' | 'Snapchat') | null
+        'page link'?: string | null
+        id?: string | null
       }[]
-    | null;
-  'payment Method': 'Mobile Money';
+    | null
+  'payment Method': 'Mobile Money'
   'Mobile Money'?: {
-    Provider?: ('mtn' | 'telecel' | 'airtelTigo') | null;
-    'Account holder name'?: string | null;
-    'Phone Number'?: string | null;
-  };
-  user: number | User;
-  updatedAt: string;
-  createdAt: string;
+    Provider?: ('mtn' | 'telecel' | 'airtelTigo') | null
+    'Account holder name'?: string | null
+    'Phone Number'?: string | null
+  }
+  user: number | User
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories".
  */
 export interface Category {
-  id: number;
-  title: string;
+  id: number
+  title: string
   /**
    * Select parent category (only after save). Leave empty for main category. eg. Women, Men, Kids
    */
-  parent?: (number | null) | Category;
+  parent?: (number | null) | Category
   /**
    * Child categories are automatically populated.
    */
-  children?: (number | Category)[] | null;
+  children?: (number | Category)[] | null
   /**
    * Select all option types relevant for this category.
    */
-  variationAttributes?: (number | VariationAttribute)[] | null;
-  updatedAt: string;
-  createdAt: string;
+  variationAttributes?: (number | VariationAttribute)[] | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "variation-attributes".
  */
 export interface VariationAttribute {
-  id: number;
+  id: number
   /**
    * Name of the variation attribute, e.g., Color, Size.
    */
-  name: string;
+  name: string
   /**
    * List of options for this variation attribute.
    */
@@ -247,317 +251,363 @@ export interface VariationAttribute {
     /**
      * Value of the option, e.g., Red, Blue, Small, Large.
      */
-    label: string;
-    value?: string | null;
-    id?: string | null;
-  }[];
-  categories?: (number | Category)[] | null;
-  updatedAt: string;
-  createdAt: string;
+    label: string
+    value?: string | null
+    id?: string | null
+  }[]
+  categories?: (number | Category)[] | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "brands".
  */
 export interface Brand {
-  id: number;
-  name: string;
-  updatedAt: string;
-  createdAt: string;
+  id: number
+  name: string
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products".
  */
 export interface Product {
-  id: number;
-  title: string;
+  id: number
+  title: string
   description?: {
     root: {
-      type: string;
+      type: string
       children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  vendor: number | Vendor;
+        type: string
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  vendor: number | Vendor
   /**
    * Only show categories without children
    */
-  category: number | Category;
-  brand?: (number | null) | Brand;
-  photos?: (number | Media)[] | null;
-  'product price currency': 'USD' | 'EUR' | 'GHS';
+  category: number | Category
+  brand?: (number | null) | Brand
+  photos?: (number | Media)[] | null
+  'product price currency': 'USD' | 'EUR' | 'GHS'
   variations?:
     | {
-        [k: string]: unknown;
+        [k: string]: unknown
       }
     | unknown[]
     | string
     | number
     | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
+    | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "carts".
+ */
+export interface Cart {
+  id: number
+  user?: (number | null) | User
+  items?:
+    | {
+        product: number | Product
+        quantity: number
+        selected_variation?:
+          | {
+              [k: string]: unknown
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null
+        id?: string | null
+      }[]
+    | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: number
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'users'
+        value: number | User
       } | null)
     | ({
-        relationTo: 'media';
-        value: number | Media;
+        relationTo: 'media'
+        value: number | Media
       } | null)
     | ({
-        relationTo: 'vendors';
-        value: number | Vendor;
+        relationTo: 'vendors'
+        value: number | Vendor
       } | null)
     | ({
-        relationTo: 'categories';
-        value: number | Category;
+        relationTo: 'categories'
+        value: number | Category
       } | null)
     | ({
-        relationTo: 'brands';
-        value: number | Brand;
+        relationTo: 'brands'
+        value: number | Brand
       } | null)
     | ({
-        relationTo: 'products';
-        value: number | Product;
+        relationTo: 'products'
+        value: number | Product
       } | null)
     | ({
-        relationTo: 'variation-attributes';
-        value: number | VariationAttribute;
-      } | null);
-  globalSlug?: string | null;
+        relationTo: 'variation-attributes'
+        value: number | VariationAttribute
+      } | null)
+    | ({
+        relationTo: 'carts'
+        value: number | Cart
+      } | null)
+  globalSlug?: string | null
   user: {
-    relationTo: 'users';
-    value: number | User;
-  };
-  updatedAt: string;
-  createdAt: string;
+    relationTo: 'users'
+    value: number | User
+  }
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: number
   user: {
-    relationTo: 'users';
-    value: number | User;
-  };
-  key?: string | null;
+    relationTo: 'users'
+    value: number | User
+  }
+  key?: string | null
   value?:
     | {
-        [k: string]: unknown;
+        [k: string]: unknown
       }
     | unknown[]
     | string
     | number
     | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
+    | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
-  name?: string | null;
-  batch?: number | null;
-  updatedAt: string;
-  createdAt: string;
+  id: number
+  name?: string | null
+  batch?: number | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  firstName?: T;
-  lastName?: T;
-  role?: T;
-  profilePicture?: T;
-  vendor_profile?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
+  firstName?: T
+  lastName?: T
+  role?: T
+  profilePicture?: T
+  vendor_profile?: T
+  updatedAt?: T
+  createdAt?: T
+  email?: T
+  resetPasswordToken?: T
+  resetPasswordExpiration?: T
+  salt?: T
+  hash?: T
+  loginAttempts?: T
+  lockUntil?: T
   sessions?:
     | T
     | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
-      };
+        id?: T
+        createdAt?: T
+        expiresAt?: T
+      }
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+  alt?: T
+  updatedAt?: T
+  createdAt?: T
+  url?: T
+  thumbnailURL?: T
+  filename?: T
+  mimeType?: T
+  filesize?: T
+  width?: T
+  height?: T
+  focalX?: T
+  focalY?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "vendors_select".
  */
 export interface VendorsSelect<T extends boolean = true> {
-  'shop name'?: T;
-  description?: T;
-  logo?: T;
-  website?: T;
-  email?: T;
-  phone?: T;
-  address?: T;
-  city?: T;
-  'gps code'?: T;
-  'zip code'?: T;
-  country?: T;
+  'shop name'?: T
+  description?: T
+  logo?: T
+  website?: T
+  email?: T
+  phone?: T
+  address?: T
+  city?: T
+  'gps code'?: T
+  'zip code'?: T
+  country?: T
   'social media pages'?:
     | T
     | {
-        'social media'?: T;
-        'page link'?: T;
-        id?: T;
-      };
-  'payment Method'?: T;
+        'social media'?: T
+        'page link'?: T
+        id?: T
+      }
+  'payment Method'?: T
   'Mobile Money'?:
     | T
     | {
-        Provider?: T;
-        'Account holder name'?: T;
-        'Phone Number'?: T;
-      };
-  user?: T;
-  updatedAt?: T;
-  createdAt?: T;
+        Provider?: T
+        'Account holder name'?: T
+        'Phone Number'?: T
+      }
+  user?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
-  title?: T;
-  parent?: T;
-  children?: T;
-  variationAttributes?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  title?: T
+  parent?: T
+  children?: T
+  variationAttributes?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "brands_select".
  */
 export interface BrandsSelect<T extends boolean = true> {
-  name?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  name?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products_select".
  */
 export interface ProductsSelect<T extends boolean = true> {
-  title?: T;
-  description?: T;
-  vendor?: T;
-  category?: T;
-  brand?: T;
-  photos?: T;
-  'product price currency'?: T;
-  variations?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  title?: T
+  description?: T
+  vendor?: T
+  category?: T
+  brand?: T
+  photos?: T
+  'product price currency'?: T
+  variations?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "variation-attributes_select".
  */
 export interface VariationAttributesSelect<T extends boolean = true> {
-  name?: T;
+  name?: T
   options?:
     | T
     | {
-        label?: T;
-        value?: T;
-        id?: T;
-      };
-  categories?: T;
-  updatedAt?: T;
-  createdAt?: T;
+        label?: T
+        value?: T
+        id?: T
+      }
+  categories?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "carts_select".
+ */
+export interface CartsSelect<T extends boolean = true> {
+  user?: T
+  items?:
+    | T
+    | {
+        product?: T
+        quantity?: T
+        selected_variation?: T
+        id?: T
+      }
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents_select".
  */
 export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
-  document?: T;
-  globalSlug?: T;
-  user?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  document?: T
+  globalSlug?: T
+  user?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-preferences_select".
  */
 export interface PayloadPreferencesSelect<T extends boolean = true> {
-  user?: T;
-  key?: T;
-  value?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  user?: T
+  key?: T
+  value?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-migrations_select".
  */
 export interface PayloadMigrationsSelect<T extends boolean = true> {
-  name?: T;
-  batch?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  name?: T
+  batch?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {
-  [k: string]: unknown;
+  [k: string]: unknown
 }
-
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

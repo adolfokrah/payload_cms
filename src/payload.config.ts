@@ -15,6 +15,7 @@ import { Categories } from './collections/Categories'
 import { Brands } from './collections/Brands'
 import { Products } from './collections/Products'
 import { VariationAttributes } from './collections/VariationAttributes'
+import { Carts } from './collections/Carts'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -26,7 +27,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Vendors, Categories, Brands, Products, VariationAttributes],
+  collections: [Users, Media, Vendors, Categories, Brands, Products, VariationAttributes, Carts],
   editor: lexicalEditor({}),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
