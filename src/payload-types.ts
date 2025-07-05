@@ -77,6 +77,7 @@ export interface Config {
     carts: Cart;
     addresses: Address;
     payment_methods: PaymentMethod;
+    orders: Order;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -93,6 +94,7 @@ export interface Config {
     carts: CartsSelect<false> | CartsSelect<true>;
     addresses: AddressesSelect<false> | AddressesSelect<true>;
     payment_methods: PaymentMethodsSelect<false> | PaymentMethodsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -144,7 +146,6 @@ export interface User {
    */
   vendor_profile?: (number | null) | Vendor;
   shipping_addresses?: (number | Address)[] | null;
-  billing_addresses?: (number | Address)[] | null;
   payment_methods?: (number | PaymentMethod)[] | null;
   updatedAt: string;
   createdAt: string;
@@ -367,6 +368,35 @@ export interface Cart {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  orderedBy?: (number | null) | User;
+  items?:
+    | {
+        product: number | Product;
+        quantity: number;
+        order_items_selected_variation?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  shipping_address: number | Address;
+  payment_method: number | PaymentMethod;
+  status?: ('processing' | 'out_for_delivery' | 'completed' | 'cancelled') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -411,6 +441,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'payment_methods';
         value: number | PaymentMethod;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -465,7 +499,6 @@ export interface UsersSelect<T extends boolean = true> {
   profilePicture?: T;
   vendor_profile?: T;
   shipping_addresses?: T;
-  billing_addresses?: T;
   payment_methods?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -626,6 +659,26 @@ export interface PaymentMethodsSelect<T extends boolean = true> {
         phone_number?: T;
       };
   user?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  orderedBy?: T;
+  items?:
+    | T
+    | {
+        product?: T;
+        quantity?: T;
+        order_items_selected_variation?: T;
+        id?: T;
+      };
+  shipping_address?: T;
+  payment_method?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }

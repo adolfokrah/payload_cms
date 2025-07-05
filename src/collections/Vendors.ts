@@ -85,7 +85,7 @@ export const Vendors: CollectionConfig = {
         }
         return false
       },
-    }
+    },
   ],
   hooks: {
     afterChange: [

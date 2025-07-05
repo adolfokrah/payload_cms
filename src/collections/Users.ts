@@ -112,13 +112,6 @@ export const Users: CollectionConfig = {
       hasMany: true,
     },
     {
-      name: 'billing_addresses',
-      label: 'Billing Addresses',
-      type: 'relationship',
-      relationTo: 'addresses',
-      hasMany: true,
-    },
-    {
       name: 'payment_methods',
       type: 'relationship',
       label: 'Payment Methods',

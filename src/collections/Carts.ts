@@ -34,13 +34,16 @@ export const Carts: CollectionConfig = {
           name: 'selected_variation',
           label: 'Selected Variation',
           type: 'json',
+          /*
+           {[ [key: string]: any}
+          */
         },
       ],
     },
   ],
   hooks: {
     beforeChange: [
-      async ({ data, req }) => {
+      async ({ data, req, operation }) => {
         const cartData = data as Cart
 
         // Validate each item in the cart

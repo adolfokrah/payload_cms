@@ -18,6 +18,7 @@ import { VariationAttributes } from './collections/VariationAttributes'
 import { Carts } from './collections/Carts'
 import { Addresses } from './collections/Addresses'
 import { PaymentMethods } from './collections/PaymentMethods'
+import { Orders } from './collections/Orders'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -40,6 +41,7 @@ export default buildConfig({
     Carts,
     Addresses,
     PaymentMethods,
+    Orders,
   ],
   editor: lexicalEditor({}),
   secret: process.env.PAYLOAD_SECRET || '',
